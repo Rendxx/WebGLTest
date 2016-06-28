@@ -30,6 +30,7 @@
         var grid = null;
         var stage = new PIXI.Container();
         var layer_grid = new PIXI.Container();
+        var currentPos = [0,0];
         
         var setup = function () {
             setupGrid();
@@ -54,6 +55,21 @@
                     }
                 }
             }
+        };
+
+        var setupMouse = function () {
+            var _getMousePos = null;
+            var _setupMousePosFunc = function (e) {
+                if (e.pageX == undefined) {
+                    return function (e) { return [e.originalEvent.touches[0].pageX, e.originalEvent.touches[0].pageY]; };
+                } else {
+                    return function (e) { return [e.pageX, e.pageY]; };
+                }
+            };
+            document.body.addEventListener('mousemove', function (e) {
+                if (_getMousePos === null) _getMousePos = _setupMousePosFunc(e);
+                currentPos = _getMousePos(e);
+            });
         };
 
         var drawLayer = function () {
@@ -84,9 +100,25 @@
             stage.addChild(layer_grid);
         };
 
+        var drawShadow = function () {
+            var graphics = new PIXI.Graphics();
+            graphics.beginFill(0xdddddd, 1);
+            graphics.drawCircle(currentPos[0], currentPos[1], Data.size * 8);
+            graphics.endFill();
+            layer_grid.addChild(graphics);
+
+            for (var k = 0; k < Data.item.length; k++) {
+                var item = Data.item[k];
+                var r1 = 0,
+                    r2 = 0;
+
+
+            }
+        };
 
         function animate() {
             requestAnimationFrame(animate);
+            drawShadow();
             renderer.render(stage);
         }
 
