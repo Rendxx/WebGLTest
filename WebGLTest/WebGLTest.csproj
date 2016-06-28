@@ -15,10 +15,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="gulpfile.js" />
+    <Content Include="Pixi.js\mask\energy_line.png" />
+    <Content Include="Pixi.js\mask\energy_line_bg.png" />
+    <Content Include="Pixi.js\mask\index.css" />
+    <Content Include="Pixi.js\mask\index.html" />
+    <Content Include="Pixi.js\mask\index.js" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="lib\" />
-    <Folder Include="Pixi.js\" />
+    <Folder Include="Pixi.js\light\" />
     <Folder Include="Three.js\" />
     <Folder Include="WebGL\" />
   </ItemGroup>
