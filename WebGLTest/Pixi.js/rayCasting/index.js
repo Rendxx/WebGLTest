@@ -27,12 +27,14 @@
         document.body.appendChild(renderer.view);
 
         // create the root of the scene graph
+        var that = this;
         var map = null;
         var graphicMap = null;
         var stage = new PIXI.Container();
         var layer_grid = new PIXI.Container();
-        var currentPos = [0, 0];
+        var mousePos = [0, 0];
         var lightPos = [0, 0];
+        var rotation = 0;
         var light = null;
         var shadowEdge = [];
         
@@ -76,7 +78,8 @@
             };
             document.body.addEventListener('mousemove', function (e) {
                 if (_getMousePos === null) _getMousePos = _setupMousePosFunc(e);
-                currentPos = _getMousePos(e);
+                mousePos = _getMousePos(e);
+                rotation = Math.atan2(-mousePos[1] + lightPos[1], mousePos[0] - lightPos[0]);
             });
 
 
@@ -156,8 +159,8 @@
                         for (var j = item[0]; j < item[0] + item[2]; j++) {
                             var graphics = graphicMap[i][j];
                             graphics.clear();
-                            graphics.lineStyle(2, 0x003333, 1);
-                            graphics.beginFill(0x004444, 1);
+                            graphics.lineStyle(2, 0x006666, 1);
+                            graphics.beginFill(0x008888, 1);
                             graphics.drawRect(j * Data.size, i * Data.size, Data.size, Data.size);
                         }
                     }
@@ -220,8 +223,7 @@
 
             for (col = 0; col < _wid; col++) {
                 var camera, ray_x, ray_y, ray_dx, ray_dy, map_x, map_y, delta_x,
-                delta_y, step_x, step_y, horiz, wall_dist, wall_height,
-                wall_x, draw_start, tex;
+                delta_y, step_x, step_y;
 
                 camera = 2 * col / _wid - 1;
                 ray_x = x;
@@ -230,43 +232,42 @@
                 ray_dy = dy + cameraY * camera;
                 map_x = Math.floor(ray_x / Data.size);
                 map_y = Math.floor(ray_y / Data.size);
-                delta_x = Math.sqrt(Data.size + (ray_dy * ray_dy) / (ray_dx * ray_dx));
-                delta_y = Math.sqrt(Data.size + (ray_dx * ray_dx) / (ray_dy * ray_dy));
+                delta_x = Math.sqrt(1 + (ray_dy * ray_dy) / (ray_dx * ray_dx));
+                delta_y = Math.sqrt(1 + (ray_dx * ray_dx) / (ray_dy * ray_dy));
 
                 // initial step for the ray
                 if (ray_dx < 0) {
-                    step_x = -Data.size;
+                    step_x = -1;
                     dist_x = (ray_x - map_x * Data.size) * delta_x;
                 } else {
-                    step_x = Data.size;
+                    step_x = 1;
                     dist_x = ((map_x + 1) * Data.size - ray_x) * delta_x;
                 }
                 if (ray_dy < 0) {
-                    step_y = -Data.size;
+                    step_y = -1;
                     dist_y = (ray_y - map_y * Data.size) * delta_y;
                 } else {
-                    step_y = Data.size;
+                    step_y = 1;
                     dist_y = ((map_y + 1) * Data.size - ray_y) * delta_y;
                 }
 
+                //console.log(ray_x, ray_y, step_x, step_y);
                 // DDA
                 while (true) {
                     if (dist_x < dist_y) {
                         dist_x += delta_x;
                         map_x += step_x;
-                        horiz = true;
                     } else {
                         dist_y += delta_y;
                         map_y += step_y;
-                        horiz = false;
                     }
 
                     if (map_x >= Data.width || map_x < 0 ||
                         map_y >= Data.height || map_y < 0)
                         break;
 
-                    if (map[map_x][map_y] !== -1) {
-                        block[map[map_x][map_y]] = true;
+                    if (map[map_y][map_x] !== -1) {
+                        block[map[map_y][map_x]] = true;
                         break;
                     }
                 }
@@ -278,8 +279,9 @@
         function animate() {
             requestAnimationFrame(animate);
             drawLight(lightPos[0], lightPos[1]);
-            rayCasting(lightPos[0], lightPos[1],0);
+            rayCasting(lightPos[0], lightPos[1], rotation);
             renderer.render(stage);
+            if (that.onAnimate) that.onAnimate();
         }
 
         setup();

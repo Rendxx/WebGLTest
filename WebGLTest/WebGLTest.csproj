@@ -19,8 +19,8 @@
     <Content Include="Pixi.js\mask\energy_line_bg.png" />
     <Content Include="Pixi.js\mask\index.html" />
     <Content Include="Pixi.js\mask\index.js" />
-    <Content Include="Pixi.js\shadow\index.html" />
-    <Content Include="Pixi.js\shadow\index.js" />
+    <Content Include="Pixi.js\rayCasting\index.html" />
+    <Content Include="Pixi.js\rayCasting\index.js" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="lib\" />

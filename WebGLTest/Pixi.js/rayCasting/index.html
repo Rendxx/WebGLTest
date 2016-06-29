@@ -8,7 +8,7 @@
     <script type="text/javascript" src="index.js"></script>
     <script src="/lib/stats.min.js"></script>
     <script src="/lib/pixi.js"></script>
-    <title>Shadow - PIXI</title>
+    <title>RayCasting - PIXI</title>
     <style>
         html {
             margin: 0;
@@ -37,7 +37,7 @@
                 stats.domElement.style.position = 'absolute';
                 stats.domElement.style.left = '0px';
                 stats.domElement.style.top = '0px';
-                $(".controller").append(stats.domElement);
+                $("body").append(stats.domElement);
 
                 var test = new Test();
                 test.onAnimate = function () {
