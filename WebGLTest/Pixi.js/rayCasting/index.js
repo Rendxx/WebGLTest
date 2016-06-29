@@ -37,6 +37,7 @@
         var rotation = 0;
         var light = null;
         var shadowEdge = [];
+        var fov = Math.PI / 2;
         
         var setup = function () {
             setupGrid();
@@ -144,11 +145,27 @@
             stage.addChild(shadowEdge[1]);
         };
 
-        var drawLight = function (x, y) {
+        var drawLight = function (x, y, rotation, fov) {
             light.clear();
             light.lineStyle(2, 0xffffff, 1);
             light.beginFill(0xcc6666, 1);
             light.drawCircle(x, y, 10);
+
+            var graphics = shadowEdge[0];
+            graphics.clear();
+            graphics.beginFill();
+            graphics.lineStyle(2, 0xFF0000);
+            graphics.moveTo(x, y);
+            graphics.lineTo(x + Math.cos(rotation - fov / 2) * 100, y - Math.sin(rotation - fov / 2) * 100);
+
+            camera = 1;
+            graphics = shadowEdge[1];
+            graphics.clear();
+            graphics.beginFill();
+            graphics.lineStyle(2, 0xFF0000);
+            graphics.moveTo(x, y);
+            graphics.lineTo(x + Math.cos(rotation + fov / 2) * 100, y - Math.sin(rotation + fov / 2) * 100);
+
         };
 
         var drawShadow = function (x, y, block) {
@@ -179,107 +196,10 @@
             }
         };
 
-        var rayCasting = function (x, y, rotation) {
-            var cos_rotspeedp = Math.cos(rotation);
-            var cos_rotspeedn = Math.cos(-rotation);
-            var sin_rotspeedp = Math.sin(rotation);
-            var sin_rotspeedn = Math.sin(-rotation);
-
-            var dx = 1.0,
-                dy = 0.0,
-                cameraX = 0,
-                cameraY = 0.66,
-                dx2 = dx,
-                cameraX2 = cameraX;
-
-            dx = dx2 * cos_rotspeedn - dy * sin_rotspeedn;
-            dy = dx2 * sin_rotspeedn + dy * cos_rotspeedn;
-
-            cameraX = cameraX2 * cos_rotspeedn - cameraY * sin_rotspeedn;
-            cameraY = cameraX2 * sin_rotspeedn + cameraY * cos_rotspeedn;
-
-
-            var graphics = shadowEdge[0];
-            var camera = - 1;
-            graphics.clear();
-            graphics.beginFill();
-            graphics.lineStyle(2, 0xFF0000);
-            graphics.moveTo(x, y);
-            graphics.lineTo(x + (dx + cameraX * camera)*100, y + (dy + cameraY * camera)*100);
-
-            camera = 1;
-            graphics = shadowEdge[1];
-            graphics.clear();
-            graphics.beginFill();
-            graphics.lineStyle(2, 0xFF0000);
-            graphics.moveTo(x, y);
-            graphics.lineTo(x + (dx + cameraX * camera)*100, y + (dy + cameraY * camera)*100);
-
-
-
-            var col,
-                _wid = 60,
-                block = {};
-
-            for (col = 0; col < _wid; col++) {
-                var camera, ray_x, ray_y, ray_dx, ray_dy, map_x, map_y, delta_x,
-                delta_y, step_x, step_y;
-
-                camera = 2 * col / _wid - 1;
-                ray_x = x;
-                ray_y = y;
-                ray_dx = dx + cameraX * camera;
-                ray_dy = dy + cameraY * camera;
-                map_x = Math.floor(ray_x / Data.size);
-                map_y = Math.floor(ray_y / Data.size);
-                delta_x = Math.sqrt(1 + (ray_dy * ray_dy) / (ray_dx * ray_dx));
-                delta_y = Math.sqrt(1 + (ray_dx * ray_dx) / (ray_dy * ray_dy));
-
-                // initial step for the ray
-                if (ray_dx < 0) {
-                    step_x = -1;
-                    dist_x = (ray_x - map_x * Data.size) * delta_x;
-                } else {
-                    step_x = 1;
-                    dist_x = ((map_x + 1) * Data.size - ray_x) * delta_x;
-                }
-                if (ray_dy < 0) {
-                    step_y = -1;
-                    dist_y = (ray_y - map_y * Data.size) * delta_y;
-                } else {
-                    step_y = 1;
-                    dist_y = ((map_y + 1) * Data.size - ray_y) * delta_y;
-                }
-
-                //console.log(ray_x, ray_y, step_x, step_y);
-                // DDA
-                while (true) {
-                    if (dist_x < dist_y) {
-                        dist_x += delta_x;
-                        map_x += step_x;
-                    } else {
-                        dist_y += delta_y;
-                        map_y += step_y;
-                    }
-
-                    if (map_x >= Data.width || map_x < 0 ||
-                        map_y >= Data.height || map_y < 0)
-                        break;
-
-                    if (map[map_y][map_x] !== -1) {
-                        block[map[map_y][map_x]] = true;
-                        break;
-                    }
-                }
-
-                drawShadow(x,y, block);
-            }
-        };
-
         function animate() {
             requestAnimationFrame(animate);
-            drawLight(lightPos[0], lightPos[1]);
-            rayCasting(lightPos[0], lightPos[1], rotation);
+            drawLight(lightPos[0], lightPos[1], rotation, fov);
+            RayCasting(lightPos[0] / Data.size, lightPos[1] / Data.size, rotation, fov, map, 30, drawShadow);
             renderer.render(stage);
             if (that.onAnimate) that.onAnimate();
         }
