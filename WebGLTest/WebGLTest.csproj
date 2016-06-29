@@ -22,6 +22,7 @@
     <Content Include="Pixi.js\rayCasting\RayCasting.js" />
     <Content Include="Pixi.js\rayCasting\index.html" />
     <Content Include="Pixi.js\rayCasting\index.js" />
+    <Content Include="Pixi.js\shadow\ground_wood.icon.png" />
     <Content Include="Pixi.js\shadow\index.html" />
     <Content Include="Pixi.js\shadow\index.js" />
     <Content Include="Pixi.js\shadow\RayCasting.js" />

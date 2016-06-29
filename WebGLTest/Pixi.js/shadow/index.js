@@ -6,7 +6,7 @@
         width: 30,
         height: 30,
         size: 16,
-        visible: 200,
+        visible: 300,
         item: [
             [2, 5, 6, 1],
             [4, 8, 1, 8],
@@ -82,11 +82,25 @@
         };
 
         var setupMask = function () {
-            //mask = new PIXI.Container();
+            //mask = new PIXI.Sprite();
             //stage.addChild(mask);
 
             shadow = new PIXI.Graphics();
             stage.addChild(shadow);
+
+            PIXI.loader
+            .add('ground_wood.icon.png')
+            .load(function (loader, resources) {
+                var hidden = new PIXI.extras.TilingSprite(PIXI.Texture.fromImage('ground_wood.icon.png'), Data.width * Data.size, Data.height * Data.size);
+
+                hidden.anchor.x = 0;
+                hidden.anchor.y = 0;
+                hidden.position.x = 0;
+                hidden.position.y = 0;
+                //hidden.mask = shadow;
+
+                //stage.addChild(hidden);
+            });
         };
 
         var setupFunction = function () {
@@ -200,14 +214,28 @@
             y = lightPos[1];
             
             shadow.clear();
-            shadow.lineStyle(0);
-            shadow.beginFill(0xffffff, 0.5);
-            shadow.drawPolygon([
-                x, y,
-                x + Math.cos(rotation - fov / 2) * Data.visible, y + Math.sin(rotation - fov / 2) * Data.visible,
-                x + Math.cos(rotation + fov / 2) * Data.visible, y + Math.sin(rotation + fov / 2) * Data.visible
-            ]);
+            shadow.lineStyle(1, 0x330000, 1);
+            shadow.beginFill(0x330000, 0.2);
+            //shadow.drawPolygon([
+            //    x, y,
+            //    x + Math.cos(rotation - fov / 2) * Data.visible, y + Math.sin(rotation - fov / 2) * Data.visible,
+            //    x + Math.cos(rotation + fov / 2) * Data.visible, y + Math.sin(rotation + fov / 2) * Data.visible
+            //]);
+
+            shadow.arc(x, y, Data.visible, rotation - fov / 2 - Math.PI, rotation - fov / 2);
             shadow.endFill();
+
+            //shadow.moveTo(x,y);
+            //shadow.moveTo(x + Math.cos(rotation + fov / 2) * Data.visible, y + Math.sin(rotation + fov / 2) * Data.visible);
+
+            //shadow.lineStyle(0);
+            //shadow.beginFill(0x000000, 0.2);
+            //shadow.arc(x, y, Data.visible, rotation + fov / 2, rotation + fov / 2 + Math.PI);
+
+            
+            shadow.endFill();
+
+            return;
 
             for (var k = 0; k < Data.item.length; k++) {
                 var item = Data.item[k];
@@ -361,13 +389,13 @@
 
                     shadow.moveTo(x + Data.visible * Math.cos(r2), y + Data.visible * Math.sin(r2));
                     shadow.lineStyle(0);
-                    shadow.beginFill(0x000000, 0.5);
+                    shadow.beginFill(0xffffff, 1);
                     shadow.arc(x, y, Data.visible, r2, r1);
                     shadow.endFill();
 
                     shadow.moveTo(drawList[0], drawList[1]);
                     shadow.lineStyle(0);
-                    shadow.beginFill(0x000000, 0.5);
+                    shadow.beginFill(0xffffff, 1);
                     shadow.drawPolygon(drawList);
                     shadow.endFill();
                 }
