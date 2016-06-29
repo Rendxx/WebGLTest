@@ -22,10 +22,12 @@
     <Content Include="Pixi.js\rayCasting\RayCasting.js" />
     <Content Include="Pixi.js\rayCasting\index.html" />
     <Content Include="Pixi.js\rayCasting\index.js" />
+    <Content Include="Pixi.js\shadow\index.html" />
+    <Content Include="Pixi.js\shadow\index.js" />
+    <Content Include="Pixi.js\shadow\RayCasting.js" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="lib\" />
-    <Folder Include="Pixi.js\shadow\" />
     <Folder Include="Three.js\" />
     <Folder Include="WebGL\" />
   </ItemGroup>

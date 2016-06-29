@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
+    <script type="text/javascript" src="/lib/jquery.js"></script>
+    <script type="text/javascript" src="RayCasting.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+    <script src="/lib/stats.min.js"></script>
+    <script src="/lib/pixi.js"></script>
+    <title>Shadow - PIXI</title>
+    <style>
+        html {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f2f2f2;
+            overflow: hidden;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        $(function () {
+            try {
+                // helper ---------------------------
+                var stats = new Stats();
+                stats.domElement.style.position = 'absolute';
+                stats.domElement.style.left = '0px';
+                stats.domElement.style.top = '0px';
+                $("body").append(stats.domElement);
+
+                var test = new Test();
+                test.onAnimate = function () {
+                    stats.update();
+                };
+
+            } catch (e) {
+                alert(e.message);
+            }
+        });
+    </script>
+</body>
+</html>
