@@ -9,7 +9,7 @@
      * @param {int} wid - scan count
      * @param {function(x, y, block)} onScaned - callback
      */
-    var RayCasting = function (x, y, rotation, fov, map, wid, onScaned) {
+    var RayCasting = function (x, y, rotation, fov, length, map, wid, onScaned) {
         var cos_rotspeedn = Math.cos(rotation);
         var sin_rotspeedn = Math.sin(rotation);
 
@@ -63,7 +63,7 @@
 
             //console.log(ray_x, ray_y, step_x, step_y);
             // DDA
-            while (true) {
+            while (dist_x < length && dist_y < length) {
                 if (dist_x < dist_y) {
                     dist_x += delta_x;
                     map_x += step_x;

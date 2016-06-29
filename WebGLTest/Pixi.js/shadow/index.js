@@ -6,7 +6,7 @@
         width: 30,
         height: 30,
         size: 16,
-        visible: 600,
+        visible: 200,
         item: [
             [2, 5, 6, 1],
             [4, 8, 1, 8],
@@ -38,14 +38,16 @@
         var rotation = 0;
         var light = null;
         var shadow = null;
+        var mask = null;
         var shadowEdge = [];
-        var fov = Math.PI / 2;
+        var fov = Math.PI / 3;
         var itemPos = [];
 
         var setup = function () {
             setupGrid();
             drawLayer();
             setupFunction();
+            setupMask();
             animate();
         };
 
@@ -77,6 +79,14 @@
                     }
                 }
             }
+        };
+
+        var setupMask = function () {
+            //mask = new PIXI.Container();
+            //stage.addChild(mask);
+
+            shadow = new PIXI.Graphics();
+            stage.addChild(shadow);
         };
 
         var setupFunction = function () {
@@ -157,8 +167,6 @@
             shadowEdge[1] = new PIXI.Graphics();
             stage.addChild(shadowEdge[1]);
 
-            shadow = new PIXI.Graphics();
-            stage.addChild(shadow);
         };
 
         var drawLight = function (x, y, rotation, fov) {
@@ -188,9 +196,19 @@
         };
 
         var drawShadow = function (x, y, block) {
-            shadow.clear();
             x = lightPos[0];
             y = lightPos[1];
+            
+            shadow.clear();
+            shadow.lineStyle(0);
+            shadow.beginFill(0xffffff, 0.5);
+            shadow.drawPolygon([
+                x, y,
+                x + Math.cos(rotation - fov / 2) * Data.visible, y + Math.sin(rotation - fov / 2) * Data.visible,
+                x + Math.cos(rotation + fov / 2) * Data.visible, y + Math.sin(rotation + fov / 2) * Data.visible
+            ]);
+            shadow.endFill();
+
             for (var k = 0; k < Data.item.length; k++) {
                 var item = Data.item[k];
                 if (block.hasOwnProperty(k)) {
@@ -233,8 +251,8 @@
 
                     switch (r) {
                         case -1:
-                            p1 = [_itemPos[0], _itemPos[3]];
-                            p2 = [_itemPos[2], _itemPos[1]];
+                            p1 = [_itemPos[0], _itemPos[3]]; // (2)
+                            p2 = [_itemPos[2], _itemPos[1]]; // (4)
 
                             if (x >= _itemPos[0]) {
                                 drawList.push(_itemPos[0]); // (1)
@@ -250,10 +268,22 @@
 
                             drawList.push(_itemPos[2]); // (4)
                             drawList.push(_itemPos[1]);
+
+                            if (y >= _itemPos[1]) {
+                                drawList.push(_itemPos[0]); // (1)
+                                drawList.push(_itemPos[1]);
+                                p2 = [_itemPos[0], _itemPos[1]];
+                            }
                             break;
                         case 0:
-                            p1 = [_itemPos[0], _itemPos[1]];
-                            p2 = [_itemPos[2], _itemPos[3]];
+                            p1 = [_itemPos[0], _itemPos[1]]; // (1)
+                            p2 = [_itemPos[2], _itemPos[3]]; // (3)
+
+                            if (y >= _itemPos[1]) {
+                                drawList.push(_itemPos[2]); // (4)
+                                drawList.push(_itemPos[1]);
+                                p1 = [_itemPos[2], _itemPos[1]];
+                            }
 
                             drawList.push(_itemPos[0]); // (1)
                             drawList.push(_itemPos[1]);
@@ -271,8 +301,8 @@
                             }
                             break;
                         case 1:
-                            p1 = [_itemPos[2], _itemPos[1]];
-                            p2 = [_itemPos[0], _itemPos[3]];
+                            p1 = [_itemPos[2], _itemPos[1]]; // (4)
+                            p2 = [_itemPos[0], _itemPos[3]]; // (2)
 
                             if (x <= _itemPos[2]) {
                                 drawList.push(_itemPos[2]); // (3)
@@ -288,10 +318,21 @@
                             drawList.push(_itemPos[0]); // (2)
                             drawList.push(_itemPos[3]);
 
+                            if (y <= _itemPos[3]) {
+                                drawList.push(_itemPos[2]); // (3)
+                                drawList.push(_itemPos[3]);
+                                p2 = [_itemPos[2], _itemPos[3]];
+                            }
                             break;
                         case 2:
-                            p1 = [_itemPos[2], _itemPos[3]];
-                            p2 = [_itemPos[0], _itemPos[1]];
+                            p1 = [_itemPos[2], _itemPos[3]]; // (3)
+                            p2 = [_itemPos[0], _itemPos[1]]; // (1)
+
+                            if (y <= _itemPos[3]) {
+                                drawList.push(_itemPos[0]); // (2)
+                                drawList.push(_itemPos[3]);
+                                p1 = [_itemPos[0], _itemPos[3]];
+                            }
 
                             drawList.push(_itemPos[2]); // (3)
                             drawList.push(_itemPos[3]);
@@ -305,18 +346,26 @@
                             if (x >= _itemPos[0]) {
                                 drawList.push(_itemPos[0]); // (2)
                                 drawList.push(_itemPos[3]);
+                                p2 = [_itemPos[0], _itemPos[3]];
                             }
                             break;
                     }
 
-                    var r1 = Math.atan2(p1[0] - x, p1[1] - y),
-                        r2 = Math.atan2(p2[0] - x, p2[1] - y);
+                    var r1 = Math.atan2(p1[1] - y, p1[0] - x),
+                        r2 = Math.atan2(p2[1] - y, p2[0] - x);
 
-                    drawList.push(lightPos[0] + Data.visible * Math.sin(r2));
-                    drawList.push(lightPos[1] + Data.visible * Math.cos(r2));
-                    drawList.push(lightPos[0] + Data.visible * Math.sin(r1));
-                    drawList.push(lightPos[1] + Data.visible * Math.cos(r1));
+                    drawList.push(lightPos[0] + Data.visible * Math.cos(r2));
+                    drawList.push(lightPos[1] + Data.visible * Math.sin(r2));
+                    drawList.push(lightPos[0] + Data.visible * Math.cos(r1));
+                    drawList.push(lightPos[1] + Data.visible * Math.sin(r1));
 
+                    shadow.moveTo(x + Data.visible * Math.cos(r2), y + Data.visible * Math.sin(r2));
+                    shadow.lineStyle(0);
+                    shadow.beginFill(0x000000, 0.5);
+                    shadow.arc(x, y, Data.visible, r2, r1);
+                    shadow.endFill();
+
+                    shadow.moveTo(drawList[0], drawList[1]);
                     shadow.lineStyle(0);
                     shadow.beginFill(0x000000, 0.5);
                     shadow.drawPolygon(drawList);
@@ -340,7 +389,7 @@
         function animate() {
             requestAnimationFrame(animate);
             drawLight(lightPos[0], lightPos[1], rotation, fov);
-            RayCasting(lightPos[0] / Data.size, lightPos[1] / Data.size, rotation, fov, map, 60, drawShadow);
+            RayCasting(lightPos[0] / Data.size, lightPos[1] / Data.size, rotation, fov, Data.visible / Data.size, map, 60, drawShadow);
             renderer.render(stage);
             if (that.onAnimate) that.onAnimate();
         }
