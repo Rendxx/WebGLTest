@@ -10,26 +10,8 @@
      * @param {function(x, y, block)} onScaned - callback
      */
     var RayCasting = function (x, y, rotation, fov, map, wid, onScaned) {
-        var cos_rotspeedp = Math.cos(rotation);
-        var cos_rotspeedn = Math.cos(-rotation);
-        var sin_rotspeedp = Math.sin(rotation);
-        var sin_rotspeedn = Math.sin(-rotation);
-
-        var partIdx = 0;
-        /*
-         *       |  0001 |  
-         * ----- +-------+ -----
-         *  0100 | BLOCK | 0010
-         * ----- +-------+ -----
-         *       |  1000 |  
-         * 
-         * +------------------->
-         * |                [X]
-         * |
-         * |
-         * v [Y]
-         * 
-         */
+        var cos_rotspeedn = Math.cos(rotation);
+        var sin_rotspeedn = Math.sin(rotation);
 
         var dx = 1.0,
             dy = 0.0,
@@ -67,20 +49,16 @@
             if (ray_dx < 0) {
                 step_x = -1;
                 dist_x = (ray_x - map_x) * delta_x;
-                partIdx = partIdx | 4;
             } else {
                 step_x = 1;
                 dist_x = ((map_x + 1) - ray_x) * delta_x;
-                partIdx = partIdx | 2;
             }
             if (ray_dy < 0) {
                 step_y = -1;
                 dist_y = (ray_y - map_y) * delta_y;
-                partIdx = partIdx | 1;
             } else {
                 step_y = 1;
                 dist_y = ((map_y + 1) - ray_y) * delta_y;
-                partIdx = partIdx | 8;
             }
 
             //console.log(ray_x, ray_y, step_x, step_y);
@@ -99,7 +77,7 @@
                     break;
 
                 if (map[map_y][map_x] !== -1) {
-                    block[map[map_y][map_x]] = (block[map[map_y][map_x]] || 0) | partIdx;
+                    block[map[map_y][map_x]] = true;
                     break;
                 }
             }
