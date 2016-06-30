@@ -209,9 +209,9 @@
 
         };
 
-        var drawShadow = function (x, y, block) {
-            x = lightPos[0];
-            y = lightPos[1];
+        var drawShadow = function (block) {
+            var x = lightPos[0];
+            var y = lightPos[1];
             
             shadow.clear();
             shadow.moveTo(x, y);

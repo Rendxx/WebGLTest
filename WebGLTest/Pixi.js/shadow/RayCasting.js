@@ -7,7 +7,7 @@
      * @param {float} fov - field of vision (radian)
      * @param {int[][]} map - map, -1 means empty
      * @param {int} wid - scan count
-     * @param {function(x, y, block)} onScaned - callback
+     * @param {function(block)} onScaned - callback
      */
     var RayCasting = function (x, y, rotation, fov, length, map, wid, onScaned) {
         var cos_rotspeedn = Math.cos(rotation);
@@ -82,7 +82,7 @@
                 }
             }
 
-            onScaned(x, y, block);
+            onScaned(block);
         }
     };
 
