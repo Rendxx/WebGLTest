@@ -6,7 +6,7 @@
         width: 30,
         height: 30,
         size: 16,
-        visible: 300,
+        visible: 400,
         item: [
             [2, 5, 6, 1],
             [4, 8, 1, 8],
@@ -34,7 +34,7 @@
         var stage = new PIXI.Container();
         var layer_grid = new PIXI.Container();
         var mousePos = [0, 0];
-        var lightPos = [0, 0];
+        var lightPos = [200, 200];
         var rotation = 0;
         var light = null;
         var shadow = null;
@@ -97,9 +97,9 @@
                 hidden.anchor.y = 0;
                 hidden.position.x = 0;
                 hidden.position.y = 0;
-                //hidden.mask = shadow;
+                hidden.mask = shadow;
 
-                //stage.addChild(hidden);
+                stage.addChild(hidden);
             });
         };
 
@@ -214,29 +214,18 @@
             y = lightPos[1];
             
             shadow.clear();
-            shadow.lineStyle(1, 0x330000, 1);
-            shadow.beginFill(0x330000, 0.2);
+            shadow.moveTo(x, y);
+            shadow.lineStyle(0);
+            shadow.beginFill(0x000000, 1);
             //shadow.drawPolygon([
             //    x, y,
             //    x + Math.cos(rotation - fov / 2) * Data.visible, y + Math.sin(rotation - fov / 2) * Data.visible,
             //    x + Math.cos(rotation + fov / 2) * Data.visible, y + Math.sin(rotation + fov / 2) * Data.visible
             //]);
-
-            shadow.arc(x, y, Data.visible, rotation - fov / 2 - Math.PI, rotation - fov / 2);
+            shadow.arc(x, y, Data.visible, rotation + fov / 2, rotation - fov / 2);
+            shadow.lineTo(x, y);
             shadow.endFill();
-
-            //shadow.moveTo(x,y);
-            //shadow.moveTo(x + Math.cos(rotation + fov / 2) * Data.visible, y + Math.sin(rotation + fov / 2) * Data.visible);
-
-            //shadow.lineStyle(0);
-            //shadow.beginFill(0x000000, 0.2);
-            //shadow.arc(x, y, Data.visible, rotation + fov / 2, rotation + fov / 2 + Math.PI);
-
             
-            shadow.endFill();
-
-            return;
-
             for (var k = 0; k < Data.item.length; k++) {
                 var item = Data.item[k];
                 if (block.hasOwnProperty(k)) {
